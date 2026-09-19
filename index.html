@@ -3,19 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chessport ♟</title>
+<meta name="theme-color" content="#080c16">
+<title>Chessport</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/dist/chess.min.js"></script>
 
 <style>
 *{
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+  margin:0;
+  padding:0;
 }
 
 body{
-  margin:0;
   font-family:Arial,Tahoma,sans-serif;
-  background:#080d18;
+  background:#080c16;
   color:white;
+  min-height:100vh;
 }
 
 button{
@@ -23,79 +27,78 @@ button{
   cursor:pointer;
 }
 
-.app{
-  max-width:650px;
-  margin:auto;
-  min-height:100vh;
-  padding:18px;
+.hidden{
+  display:none!important;
 }
-
-/* ===== الشاشات ===== */
 
 .screen{
-  display:none;
+  min-height:100vh;
+  padding:20px 12px 40px;
 }
 
-.screen.active{
-  display:block;
+.header{
+  text-align:center;
+  padding:35px 10px 25px;
 }
 
 .logo{
-  text-align:center;
-  font-size:38px;
-  font-weight:bold;
-  margin:25px 0 8px;
+  font-size:50px;
+  font-weight:900;
+  letter-spacing:-2px;
+}
+
+.logo span{
+  color:#3b82f6;
 }
 
 .subtitle{
-  text-align:center;
+  margin-top:10px;
   color:#aeb8ca;
-  font-size:17px;
-  margin-bottom:35px;
+  font-size:18px;
 }
 
 .card{
-  background:#121a2b;
-  border:1px solid #263451;
-  border-radius:22px;
-  padding:20px;
-  margin-bottom:16px;
+  max-width:650px;
+  margin:18px auto;
+  background:#11182a;
+  border:1px solid #273550;
+  border-radius:25px;
+  padding:25px;
+  box-shadow:0 15px 40px rgba(0,0,0,.25);
 }
 
-.mainBtn{
+.big-btn{
   width:100%;
   border:0;
-  border-radius:15px;
-  padding:17px;
-  margin:7px 0;
-  font-size:18px;
+  border-radius:17px;
+  padding:18px;
+  margin:8px 0;
+  background:#2563eb;
+  color:white;
+  font-size:20px;
   font-weight:bold;
-  background:#253453;
-  color:white;
 }
 
-.mainBtn.primary{
-  background:#5b48d6;
+.big-btn.secondary{
+  background:#1b263d;
 }
 
-.back{
-  border:0;
-  background:#202b40;
-  color:white;
-  border-radius:12px;
-  padding:10px 16px;
-  font-size:16px;
+.big-btn:hover{
+  filter:brightness(1.12);
 }
 
-/* ===== الإعدادات ===== */
-
-h2{
-  margin-top:8px;
+.title{
+  text-align:center;
+  font-size:30px;
+  margin-bottom:25px;
 }
 
-.optionTitle{
+.label{
+  display:block;
   color:#aeb8ca;
-  margin:20px 0 10px;
+  margin:18px 0 10px;
+  font-size:17px;
+  font-weight:bold;
 }
 
 .options{
@@ -105,71 +108,166 @@ h2{
 }
 
 .option{
-  background:#202b40;
+  border:2px solid #293750;
+  background:#0d1423;
   color:white;
-  border:2px solid transparent;
-  border-radius:13px;
   padding:14px;
+  border-radius:14px;
   font-size:16px;
 }
 
 .option.selected{
-  border-color:#8b7cff;
-  background:#30296a;
+  border-color:#3b82f6;
+  background:#172b51;
 }
 
-.start{
-  width:100%;
-  margin-top:25px;
-  padding:17px;
-  border:0;
-  border-radius:15px;
-  background:#5b48d6;
+.themes{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.theme{
+  border:3px solid transparent;
+  border-radius:14px;
+  overflow:hidden;
+  background:#0b1120;
+  padding:5px;
   color:white;
-  font-size:19px;
-  font-weight:bold;
 }
 
-/* ===== الرقعة ===== */
+.theme.selected{
+  border-color:#3b82f6;
+}
 
-.gameTop{
+.theme-board{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  aspect-ratio:1;
+}
+
+.theme-board div{
+  min-height:20px;
+}
+
+.theme-name{
+  text-align:center;
+  padding:7px 2px;
+  font-size:13px;
+}
+
+.theme-classic .light,
+.classic .light{
+  background:#f0d9b5;
+}
+
+.theme-classic .dark,
+.classic .dark{
+  background:#b58863;
+}
+
+.theme-green .light,
+.green .light{
+  background:#eeeed2;
+}
+
+.theme-green .dark,
+.green .dark{
+  background:#769656;
+}
+
+.theme-blue .light,
+.blue .light{
+  background:#d9e8f5;
+}
+
+.theme-blue .dark,
+.blue .dark{
+  background:#4f81a8;
+}
+
+.theme-wood .light,
+.wood .light{
+  background:#e8cfa7;
+}
+
+.theme-wood .dark,
+.wood .dark{
+  background:#9a633d;
+}
+
+.theme-gray .light,
+.gray .light{
+  background:#dedede;
+}
+
+.theme-gray .dark,
+.gray .dark{
+  background:#777;
+}
+
+.theme-purple .light,
+.purple .light{
+  background:#eadcf2;
+}
+
+.theme-purple .dark,
+.purple .dark{
+  background:#80649a;
+}
+
+.game-wrap{
+  max-width:850px;
+  margin:auto;
+}
+
+.game-top{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:10px;
   margin-bottom:12px;
 }
 
-.timer{
-  background:#070b14;
-  padding:13px 20px;
-  border-radius:14px;
-  font-size:25px;
-  font-weight:bold;
-  min-width:105px;
+.player-box{
+  background:#11182a;
+  border:1px solid #273550;
+  border-radius:15px;
+  padding:10px 15px;
+  flex:1;
   text-align:center;
 }
 
-.player{
+.player-name{
   font-weight:bold;
-  color:#b9c2d4;
+  margin-bottom:5px;
 }
 
-.boardWrap{
-  width:100%;
-  aspect-ratio:1;
-  padding:5px;
-  background:#050912;
+.clock{
+  font-size:28px;
+  font-weight:900;
+  background:#070b14;
+  border-radius:10px;
+  padding:7px;
+}
+
+.clock.active{
+  outline:3px solid #2563eb;
+}
+
+.board-container{
+  width:min(94vw,700px);
+  margin:auto;
+  border:7px solid #0a0f1b;
   border-radius:18px;
   overflow:hidden;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
 }
 
 .board{
-  width:100%;
-  height:100%;
   display:grid;
   grid-template-columns:repeat(8,1fr);
-  border-radius:13px;
-  overflow:hidden;
+  aspect-ratio:1;
 }
 
 .square{
@@ -177,8 +275,10 @@ h2{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:clamp(28px,9vw,55px);
   user-select:none;
+  touch-action:manipulation;
+  font-size:clamp(31px,9vw,67px);
+  line-height:1;
 }
 
 .square.light{
@@ -189,230 +289,389 @@ h2{
   background:#b58863;
 }
 
-/* ===== 6 رقعات ===== */
-
-.theme1 .light{background:#f0d9b5}
-.theme1 .dark{background:#b58863}
-
-.theme2 .light{background:#eeeeee}
-.theme2 .dark{background:#769656}
-
-.theme3 .light{background:#e8edf5}
-.theme3 .dark{background:#64748b}
-
-.theme4 .light{background:#f5e6c8}
-.theme4 .dark{background:#9b6b43}
-
-.theme5 .light{background:#e8d9ff}
-.theme5 .dark{background:#7654a8}
-
-.theme6 .light{background:#d9f3f0}
-.theme6 .dark{background:#328b87}
-
-.piece{
-  filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));
-  line-height:1;
+.square.selected{
+  box-shadow:inset 0 0 0 5px #22c55e;
 }
 
-/* الهلال بدل الصليب */
-
-.king{
-  font-family:Arial,sans-serif;
-  font-weight:bold;
+.square.last{
+  box-shadow:inset 0 0 0 5px rgba(250,204,21,.65);
 }
 
-.whitePiece{
-  color:#fff;
-  text-shadow:0 2px 3px #555;
-}
-
-.blackPiece{
-  color:#111;
-  text-shadow:0 1px 1px #fff;
-}
-
-.selectedSquare{
-  box-shadow:inset 0 0 0 5px rgba(255,210,50,.8);
-}
-
-.moveHint::after{
+.square.legal::after{
   content:"";
-  width:18px;
-  height:18px;
-  background:rgba(40,120,40,.65);
+  width:22%;
+  height:22%;
+  background:rgba(20,30,20,.35);
   border-radius:50%;
   position:absolute;
 }
 
-.lastMove{
-  box-shadow:inset 0 0 0 4px rgba(255,215,0,.45);
+.square.capture::after{
+  content:"";
+  width:75%;
+  height:75%;
+  border:5px solid rgba(200,40,40,.55);
+  border-radius:50%;
+  position:absolute;
 }
 
-/* ===== سجل النقلات ===== */
+.piece{
+  position:relative;
+  z-index:2;
+  font-family:"Times New Roman",serif;
+}
+
+.white-piece{
+  color:#fff;
+  text-shadow:0 2px 2px #555;
+}
+
+.black-piece{
+  color:#171717;
+  text-shadow:0 1px 1px #aaa;
+}
+
+.game-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:18px;
+}
 
 .history{
-  margin-top:15px;
-  background:#111a2a;
-  border-radius:17px;
-  padding:15px;
+  background:#11182a;
+  border:1px solid #273550;
+  border-radius:18px;
+  padding:17px;
+  min-height:120px;
 }
 
-.historyTitle{
-  font-size:19px;
-  font-weight:bold;
-  margin-bottom:10px;
+.history h3{
+  margin-bottom:12px;
 }
 
 .moves{
-  max-height:170px;
-  overflow:auto;
-  color:#d5dbea;
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  color:#dce5f5;
 }
 
-.moveRow{
-  display:grid;
-  grid-template-columns:40px 1fr 1fr;
-  padding:7px 3px;
-  border-bottom:1px solid #263148;
+.move{
+  background:#1a2539;
+  padding:6px 9px;
+  border-radius:8px;
+  font-size:14px;
 }
 
 .controls{
+  background:#11182a;
+  border:1px solid #273550;
+  border-radius:18px;
+  padding:17px;
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin-top:12px;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
 }
 
 .control{
   border:0;
-  background:#202b40;
+  background:#1b263d;
   color:white;
-  border-radius:12px;
-  padding:12px 5px;
+  padding:12px 8px;
+  border-radius:11px;
+  font-weight:bold;
 }
 
-.themeButtons{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
+.control.primary{
+  background:#2563eb;
 }
 
-.themeBtn{
-  height:45px;
-  border:3px solid transparent;
-  border-radius:10px;
+.status{
+  text-align:center;
+  margin:15px 0;
+  font-size:19px;
+  font-weight:bold;
+  min-height:25px;
 }
 
-.themeBtn.active{
-  border-color:white;
+.back{
+  display:block;
+  width:100%;
+  max-width:650px;
+  margin:15px auto 0;
+  border:0;
+  background:#27344d;
+  color:white;
+  padding:14px;
+  border-radius:14px;
+  font-size:17px;
 }
 
-.t1{background:linear-gradient(135deg,#f0d9b5 50%,#b58863 50%)}
-.t2{background:linear-gradient(135deg,#eee 50%,#769656 50%)}
-.t3{background:linear-gradient(135deg,#e8edf5 50%,#64748b 50%)}
-.t4{background:linear-gradient(135deg,#f5e6c8 50%,#9b6b43 50%)}
-.t5{background:linear-gradient(135deg,#e8d9ff 50%,#7654a8 50%)}
-.t6{background:linear-gradient(135deg,#d9f3f0 50%,#328b87 50%)}
+@media(max-width:600px){
+
+  .screen{
+    padding:12px 10px 30px;
+  }
+
+  .logo{
+    font-size:38px;
+  }
+
+  .subtitle{
+    font-size:16px;
+  }
+
+  .card{
+    padding:17px;
+  }
+
+  .themes{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .game-info{
+    grid-template-columns:1fr;
+  }
+
+  .game-top{
+    gap:6px;
+  }
+
+  .player-box{
+    padding:8px;
+  }
+
+  .clock{
+    font-size:22px;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<!-- الرئيسية -->
+<section id="home" class="screen">
 
-<!-- ================= الرئيسية ================= -->
+  <div class="header">
+    <div class="logo">
+      Chess<span>port</span> ♟
+    </div>
 
-<section id="home" class="screen active">
-
-  <div class="logo">Chessport ☾</div>
-
-  <div class="subtitle">
-    منصة شطرنج عربية — تعمل على الهاتف والكمبيوتر
+    <div class="subtitle">
+      منصة شطرنج عربية — تعمل على الهاتف والكمبيوتر
+    </div>
   </div>
 
   <div class="card">
-    <button class="mainBtn primary" onclick="showScreen('setup')">
-      ♟ لعب مباراة جديدة
+
+    <button class="big-btn" onclick="showSetup()">
+      ♟️ لعب مباراة جديدة
     </button>
 
-    <button class="mainBtn">
+    <button class="big-btn secondary"
+      onclick="alert('قسم البطولات سيتم تطويره قريبًا 🏆')">
       🏆 البطولات
     </button>
 
-    <button class="mainBtn">
+    <button class="big-btn secondary"
+      onclick="alert('قسم تعلم الشطرنج سيتم تطويره قريبًا 📚')">
       📚 تعلم الشطرنج
     </button>
 
-    <button class="mainBtn">
-      ⚙ الإعدادات
-    </button>
   </div>
 
 </section>
 
 
-<!-- ================= إعداد المباراة ================= -->
-
-<section id="setup" class="screen">
-
-  <button class="back" onclick="showScreen('home')">← رجوع</button>
+<!-- إعداد المباراة -->
+<section id="setup" class="screen hidden">
 
   <div class="card">
 
-    <h2>إعداد المباراة</h2>
+    <h1 class="title">
+      ⚙️ إعداد المباراة
+    </h1>
 
-    <div class="optionTitle">اللون</div>
+    <div class="label">
+      اختر لونك
+    </div>
 
     <div class="options">
-      <button class="option selected" onclick="selectOption(this)">
+
+      <button id="whiteBtn"
+        class="option selected"
+        onclick="chooseColor('w')">
         ⚪ الأبيض
       </button>
 
-      <button class="option" onclick="selectOption(this)">
+      <button id="blackBtn"
+        class="option"
+        onclick="chooseColor('b')">
         ⚫ الأسود
       </button>
+
     </div>
 
-    <div class="optionTitle">الوقت</div>
+
+    <div class="label">
+      وقت المباراة
+    </div>
 
     <div class="options">
-      <button class="option selected" onclick="selectOption(this)">
-        5 + 0
+
+      <button class="option selected timeOption"
+        onclick="chooseTime(10,this)">
+        10 دقائق
       </button>
 
-      <button class="option" onclick="selectOption(this)">
-        10 + 0
+      <button class="option timeOption"
+        onclick="chooseTime(5,this)">
+        5 دقائق
       </button>
 
-      <button class="option" onclick="selectOption(this)">
-        10 + 5
+      <button class="option timeOption"
+        onclick="chooseTime(3,this)">
+        3 دقائق
       </button>
 
-      <button class="option" onclick="selectOption(this)">
-        15 + 10
+      <button class="option timeOption"
+        onclick="chooseTime(15,this)">
+        15 دقيقة
       </button>
-    </div>
-
-    <div class="optionTitle">اختر الرقعة</div>
-
-    <div class="themeButtons">
-
-      <button class="themeBtn t1 active" onclick="chooseTheme(1,this)"></button>
-
-      <button class="themeBtn t2" onclick="chooseTheme(2,this)"></button>
-
-      <button class="themeBtn t3" onclick="chooseTheme(3,this)"></button>
-
-      <button class="themeBtn t4" onclick="chooseTheme(4,this)"></button>
-
-      <button class="themeBtn t5" onclick="chooseTheme(5,this)"></button>
-
-      <button class="themeBtn t6" onclick="chooseTheme(6,this)"></button>
 
     </div>
 
-    <button class="start" onclick="startGame()">
-      ابدأ المباراة ♟
+
+    <div class="label">
+      🎨 اختر الرقعة
+    </div>
+
+    <div class="themes">
+
+      <button class="theme selected"
+        onclick="chooseTheme('classic',this)">
+
+        <div class="theme-board">
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+        </div>
+
+        <div class="theme-name">كلاسيك</div>
+
+      </button>
+
+
+      <button class="theme"
+        onclick="chooseTheme('green',this)">
+
+        <div class="theme-board">
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+        </div>
+
+        <div class="theme-name">أخضر</div>
+
+      </button>
+
+
+      <button class="theme"
+        onclick="chooseTheme('blue',this)">
+
+        <div class="theme-board">
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+        </div>
+
+        <div class="theme-name">أزرق</div>
+
+      </button>
+
+
+      <button class="theme"
+        onclick="chooseTheme('wood',this)">
+
+        <div class="theme-board">
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+        </div>
+
+        <div class="theme-name">خشبي</div>
+
+      </button>
+
+
+      <button class="theme"
+        onclick="chooseTheme('gray',this)">
+
+        <div class="theme-board">
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+        </div>
+
+        <div class="theme-name">رمادي</div>
+
+      </button>
+
+
+      <button class="theme"
+        onclick="chooseTheme('purple',this)">
+
+        <div class="theme-board">
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="light"></div><div class="dark"></div>
+          <div class="dark"></div><div class="light"></div>
+          <div class="dark"></div><div class="light"></div>
+        </div>
+
+        <div class="theme-name">بنفسجي</div>
+
+      </button>
+
+    </div>
+
+
+    <button class="big-btn" onclick="startGame()">
+      🚀 ابدأ المباراة
+    </button>
+
+    <button class="back" onclick="showHome()">
+      ← العودة للرئيسية
     </button>
 
   </div>
@@ -420,206 +679,235 @@ h2{
 </section>
 
 
-<!-- ================= المباراة ================= -->
+<!-- اللعبة -->
+<section id="game" class="screen hidden">
 
-<section id="game" class="screen">
+  <div class="game-wrap">
 
-  <div class="gameTop">
+    <div class="game-top">
 
-    <button class="back" onclick="showScreen('setup')">
-      ⚙
-    </button>
+      <div class="player-box">
+        <div class="player-name">
+          الأسود ⚫
+        </div>
 
-    <div class="player">الأسود ⚫</div>
-
-    <div id="blackClock" class="timer">5:00</div>
-
-  </div>
-
-  <div id="boardWrap" class="boardWrap theme1">
-
-    <div id="board" class="board"></div>
-
-  </div>
-
-  <div class="gameTop" style="margin-top:12px">
-
-    <div class="player">الأبيض ⚪</div>
-
-    <div id="whiteClock" class="timer">5:00</div>
-
-  </div>
-
-
-  <!-- سجل النقلات -->
-
-  <div class="history">
-
-    <div class="historyTitle">
-      📜 سجل النقلات
-    </div>
-
-    <div id="moves" class="moves">
-      <div style="color:#8792a8">
-        لم تبدأ أي نقلة بعد
+        <div id="blackClock" class="clock">
+          10:00
+        </div>
       </div>
+
+
+      <div class="player-box">
+        <div class="player-name">
+          الأبيض ⚪
+        </div>
+
+        <div id="whiteClock" class="clock">
+          10:00
+        </div>
+      </div>
+
+    </div>
+
+
+    <div id="status" class="status">
+      دور الأبيض ⚪
+    </div>
+
+
+    <div id="boardContainer"
+      class="board-container">
+
+      <div id="board"
+        class="board">
+      </div>
+
+    </div>
+
+
+    <div class="game-info">
+
+      <div class="history">
+
+        <h3>
+          📜 النقلات
+        </h3>
+
+        <div id="moves"
+          class="moves">
+        </div>
+
+      </div>
+
+
+      <div class="controls">
+
+        <button class="control"
+          onclick="undoMove()">
+          ↩️ تراجع
+        </button>
+
+        <button class="control"
+          onclick="resetGame()">
+          🔄 إعادة
+        </button>
+
+        <button class="control primary"
+          onclick="showHome()">
+          🏠 الرئيسية
+        </button>
+
+        <button class="control"
+          onclick="flipBoard()">
+          🔃 قلب الرقعة
+        </button>
+
+      </div>
+
     </div>
 
   </div>
 
-
-  <div class="controls">
-
-    <button class="control" onclick="undoMove()">
-      ↩ تراجع
-    </button>
-
-    <button class="control" onclick="flipBoard()">
-      🔄 قلب الرقعة
-    </button>
-
-    <button class="control" onclick="newGame()">
-      🆕 مباراة جديدة
-    </button>
-
-  </div>
-
 </section>
-
-</div>
 
 
 <script>
 
-/* =========================================
-   بيانات اللعبة
-========================================= */
+let game = new Chess();
 
-const pieces = {
-  r:"♜",
-  n:"♞",
-  b:"♝",
-  q:"♛",
-  k:"☾",
-  p:"♟"
+let selectedSquare = null;
+
+let playerColor = "w";
+
+let selectedTime = 10;
+
+let selectedTheme = "classic";
+
+let flipped = false;
+
+let clocks = {
+  w: 600,
+  b: 600
 };
 
-let boardState = [
- ["r","n","b","q","k","b","n","r"],
- ["p","p","p","p","p","p","p","p"],
- ["","","","","","","",""],
- ["","","","","","","",""],
- ["","","","","","","",""],
- ["","","","","","","",""],
- ["P","P","P","P","P","P","P","P"],
- ["R","N","B","Q","K","B","N","R"]
-];
-
-let selected = null;
-let turn = "white";
-let history = [];
-let flipped = false;
-let theme = 1;
-
-let whiteSeconds = 300;
-let blackSeconds = 300;
-let timerInterval = null;
+let timer = null;
 
 
-/* =========================================
-   الانتقال بين الواجهات
-========================================= */
+/* ===== التنقل ===== */
 
-function showScreen(id){
+function showHome(){
 
-  document.querySelectorAll(".screen")
-    .forEach(s => s.classList.remove("active"));
+  stopClock();
 
-  document.getElementById(id)
-    .classList.add("active");
+  document.getElementById("home")
+    .classList.remove("hidden");
+
+  document.getElementById("setup")
+    .classList.add("hidden");
+
+  document.getElementById("game")
+    .classList.add("hidden");
 }
 
 
-/* =========================================
-   اختيار الإعداد
-========================================= */
+function showSetup(){
 
-function selectOption(btn){
+  document.getElementById("home")
+    .classList.add("hidden");
 
-  const group = btn.parentElement;
+  document.getElementById("setup")
+    .classList.remove("hidden");
 
-  group.querySelectorAll(".option")
-    .forEach(x => x.classList.remove("selected"));
-
-  btn.classList.add("selected");
+  document.getElementById("game")
+    .classList.add("hidden");
 }
 
 
-function chooseTheme(number,btn){
+/* ===== الإعدادات ===== */
 
-  theme = number;
+function chooseColor(color){
 
-  document.querySelectorAll(".themeBtn")
-    .forEach(x => x.classList.remove("active"));
+  playerColor = color;
 
-  btn.classList.add("active");
+  document.getElementById("whiteBtn")
+    .classList.toggle("selected",color==="w");
 
-  document.getElementById("boardWrap").className =
-    "boardWrap theme" + number;
+  document.getElementById("blackBtn")
+    .classList.toggle("selected",color==="b");
 }
 
 
-/* =========================================
-   بدء اللعبة
-========================================= */
+function chooseTime(minutes,button){
+
+  selectedTime = minutes;
+
+  document.querySelectorAll(".timeOption")
+    .forEach(b=>b.classList.remove("selected"));
+
+  button.classList.add("selected");
+}
+
+
+function chooseTheme(theme,button){
+
+  selectedTheme = theme;
+
+  document.querySelectorAll(".theme")
+    .forEach(b=>b.classList.remove("selected"));
+
+  button.classList.add("selected");
+}
+
+
+/* ===== بدء المباراة ===== */
 
 function startGame(){
 
-  resetBoard();
+  game = new Chess();
 
-  showScreen("game");
+  selectedSquare = null;
+
+  clocks.w = selectedTime * 60;
+  clocks.b = selectedTime * 60;
+
+  flipped = playerColor === "b";
+
+  document.getElementById("setup")
+    .classList.add("hidden");
+
+  document.getElementById("game")
+    .classList.remove("hidden");
+
+  updateClockDisplay();
 
   renderBoard();
+
+  updateStatus();
 
   startClock();
 }
 
 
-/* =========================================
-   إعادة الرقعة
-========================================= */
+/* ===== الرقعة ===== */
 
-function resetBoard(){
+const pieces = {
 
-  boardState = [
-   ["r","n","b","q","k","b","n","r"],
-   ["p","p","p","p","p","p","p","p"],
-   ["","","","","","","",""],
-   ["","","","","","","",""],
-   ["","","","","","","",""],
-   ["","","","","","","",""],
-   ["P","P","P","P","P","P","P","P"],
-   ["R","N","B","Q","K","B","N","R"]
-  ];
+  p:"♟",
+  r:"♜",
+  n:"♞",
+  b:"♝",
+  q:"♛",
+  k:"♚",
 
-  selected = null;
-  turn = "white";
-  history = [];
-  flipped = false;
+  P:"♙",
+  R:"♖",
+  N:"♘",
+  B:"♗",
+  Q:"♕",
+  K:"♔"
 
-  whiteSeconds = 300;
-  blackSeconds = 300;
+};
 
-  document.getElementById("moves").innerHTML =
-    '<div style="color:#8792a8">لم تبدأ أي نقلة بعد</div>';
-
-  clearInterval(timerInterval);
-}
-
-
-/* =========================================
-   رسم الرقعة
-========================================= */
 
 function renderBoard(){
 
@@ -627,303 +915,384 @@ function renderBoard(){
 
   board.innerHTML = "";
 
-  for(let displayRow=0; displayRow<8; displayRow++){
+  let position = game.board();
 
-    let r = flipped ? 7-displayRow : displayRow;
+  if(flipped){
 
-    for(let displayCol=0; displayCol<8; displayCol++){
+    position = position
+      .slice()
+      .reverse()
+      .map(row=>row.slice().reverse());
 
-      let c = flipped ? 7-displayCol : displayCol;
+  }
+
+  position.forEach((row,rowIndex)=>{
+
+    row.forEach((piece,colIndex)=>{
 
       const square = document.createElement("div");
 
+      let actualRow = flipped
+        ? 7-rowIndex
+        : rowIndex;
+
+      let actualCol = flipped
+        ? 7-colIndex
+        : colIndex;
+
+      const squareName =
+        String.fromCharCode(97+actualCol)
+        +(8-actualRow);
+
       square.className =
-        "square " +
-        (((r+c)%2===0) ? "light" : "dark");
+        "square "
+        + ((actualRow+actualCol)%2===0
+        ? "light"
+        : "dark");
 
-      if(selected &&
-         selected.r===r &&
-         selected.c===c){
+      if(selectedSquare === squareName){
 
-        square.classList.add("selectedSquare");
+        square.classList.add("selected");
+
       }
-
-      const piece = boardState[r][c];
 
       if(piece){
 
-        const span = document.createElement("span");
+        const span =
+          document.createElement("span");
 
         span.className =
-          "piece " +
-          (piece===piece.toUpperCase()
-            ? "whitePiece"
-            : "blackPiece");
-
-        if(piece.toLowerCase()==="k")
-          span.classList.add("king");
+          "piece "
+          +(piece.color==="w"
+          ? "white-piece"
+          : "black-piece");
 
         span.textContent =
-          pieces[piece.toLowerCase()];
+          pieces[
+            piece.color==="w"
+            ? piece.type.toUpperCase()
+            : piece.type
+          ];
 
         square.appendChild(span);
+
       }
 
-      square.onclick = () => clickSquare(r,c);
+      square.onclick =
+        ()=>handleSquareClick(squareName);
 
       board.appendChild(square);
-    }
+
+    });
+
   }
+
+  applyTheme();
+
 }
 
 
-/* =========================================
-   الضغط على مربع
-========================================= */
+/* ===== اللعب ===== */
 
-function clickSquare(r,c){
+function handleSquareClick(square){
 
-  const piece = boardState[r][c];
+  if(game.isGameOver()) return;
 
-  if(selected){
+  const piece =
+    game.get(square);
 
-    if(selected.r===r && selected.c===c){
+  if(!selectedSquare){
 
-      selected = null;
+    if(piece && piece.color === game.turn()){
+
+      selectedSquare = square;
+
       renderBoard();
-      return;
+
     }
 
-    if(piece &&
-       ((piece===piece.toUpperCase()) === (turn==="white"))){
+    return;
 
-      selected = {r,c};
-      renderBoard();
-      return;
-    }
+  }
 
-    movePiece(selected.r,selected.c,r,c);
 
-    selected = null;
+  if(selectedSquare === square){
+
+    selectedSquare = null;
 
     renderBoard();
 
-  }else{
+    return;
 
-    if(piece &&
-       ((piece===piece.toUpperCase()) === (turn==="white"))){
+  }
 
-      selected = {r,c};
+
+  try{
+
+    const move = game.move({
+
+      from:selectedSquare,
+
+      to:square,
+
+      promotion:"q"
+
+    });
+
+    if(move){
+
+      selectedSquare = null;
 
       renderBoard();
+
+      updateMoves();
+
+      updateStatus();
+
+      if(game.isGameOver()){
+
+        stopClock();
+
+      }
+
+      return;
+
     }
-  }
-}
+
+  }catch(error){}
 
 
-/* =========================================
-   تحريك القطعة
-========================================= */
+  if(piece && piece.color === game.turn()){
 
-function movePiece(fr,fc,tr,tc){
-
-  const piece = boardState[fr][fc];
-
-  if(!piece) return;
-
-  const captured = boardState[tr][tc];
-
-  boardState[tr][tc] = piece;
-  boardState[fr][fc] = "";
-
-  history.push({
-    fr,fc,tr,tc,
-    piece,
-    captured
-  });
-
-  addMoveToHistory(fr,fc,tr,tc,piece,captured);
-
-  turn = turn==="white" ? "black" : "white";
-}
-
-
-/* =========================================
-   سجل النقلات
-========================================= */
-
-function squareName(r,c){
-
-  const files = ["a","b","c","d","e","f","g","h"];
-
-  return files[c] + (8-r);
-}
-
-
-function addMoveToHistory(fr,fc,tr,tc,piece,captured){
-
-  const moves = document.getElementById("moves");
-
-  if(history.length===1)
-    moves.innerHTML = "";
-
-  let rows = moves.querySelectorAll(".moveRow");
-
-  let number = Math.ceil(history.length/2);
-
-  if(history.length%2===1){
-
-    const row = document.createElement("div");
-
-    row.className = "moveRow";
-
-    row.innerHTML =
-      "<span>"+number+".</span>" +
-      "<span>"+squareName(fr,fc)+"-"+squareName(tr,tc)+"</span>" +
-      "<span></span>";
-
-    moves.appendChild(row);
+    selectedSquare = square;
 
   }else{
 
-    const row = rows[rows.length-1];
+    selectedSquare = null;
 
-    row.children[2].textContent =
-      squareName(fr,fc)+"-"+squareName(tr,tc);
   }
 
-  moves.scrollTop = moves.scrollHeight;
+  renderBoard();
+
 }
 
 
-/* =========================================
-   تراجع
-========================================= */
+/* ===== النقلات ===== */
+
+function updateMoves(){
+
+  const container =
+    document.getElementById("moves");
+
+  container.innerHTML = "";
+
+  game.history().forEach((move,index)=>{
+
+    const span =
+      document.createElement("span");
+
+    span.className = "move";
+
+    span.textContent =
+      (index+1)+". "+move;
+
+    container.appendChild(span);
+
+  });
+
+}
+
+
+/* ===== الحالة ===== */
+
+function updateStatus(){
+
+  const status =
+    document.getElementById("status");
+
+  if(game.isCheckmate()){
+
+    status.textContent =
+      "♔ كش مات — انتهت المباراة";
+
+    return;
+
+  }
+
+  if(game.isDraw()){
+
+    status.textContent =
+      "🤝 تعادل";
+
+    return;
+
+  }
+
+  if(game.inCheck()){
+
+    status.textContent =
+      "⚠️ كش! دور "
+      +(game.turn()==="w"
+      ? "الأبيض ⚪"
+      : "الأسود ⚫");
+
+    return;
+
+  }
+
+  status.textContent =
+    "دور "
+    +(game.turn()==="w"
+    ? "الأبيض ⚪"
+    : "الأسود ⚫");
+}
+
+
+/* ===== الساعة ===== */
+
+function startClock(){
+
+  stopClock();
+
+  timer = setInterval(()=>{
+
+    if(game.isGameOver()){
+
+      stopClock();
+
+      return;
+
+    }
+
+    const turn = game.turn();
+
+    clocks[turn]--;
+
+    if(clocks[turn] <= 0){
+
+      clocks[turn] = 0;
+
+      stopClock();
+
+      document.getElementById("status")
+        .textContent =
+        "⏱️ انتهى الوقت — "
+        +(turn==="w"
+        ? "الأسود"
+        : "الأبيض")
+        +" يفوز بالوقت";
+
+    }
+
+    updateClockDisplay();
+
+  },1000);
+
+}
+
+
+function stopClock(){
+
+  if(timer){
+
+    clearInterval(timer);
+
+    timer = null;
+
+  }
+
+}
+
+
+function updateClockDisplay(){
+
+  document.getElementById("whiteClock")
+    .textContent =
+    formatTime(clocks.w);
+
+  document.getElementById("blackClock")
+    .textContent =
+    formatTime(clocks.b);
+
+}
+
+
+function formatTime(seconds){
+
+  const minutes =
+    Math.floor(seconds/60);
+
+  const secs =
+    seconds%60;
+
+  return String(minutes)
+    .padStart(2,"0")
+    +":"
+    +String(secs)
+    .padStart(2,"0");
+
+}
+
+
+/* ===== أدوات ===== */
+
+function resetGame(){
+
+  startGame();
+
+}
+
 
 function undoMove(){
 
-  if(history.length===0) return;
+  if(game.history().length===0)
+    return;
 
-  const last = history.pop();
+  game.undo();
 
-  boardState[last.fr][last.fc] = last.piece;
-
-  boardState[last.tr][last.tc] = last.captured;
-
-  turn = turn==="white" ? "black" : "white";
-
-  rebuildHistory();
+  selectedSquare = null;
 
   renderBoard();
+
+  updateMoves();
+
+  updateStatus();
+
 }
 
-
-function rebuildHistory(){
-
-  const moves = document.getElementById("moves");
-
-  moves.innerHTML = "";
-
-  if(history.length===0){
-
-    moves.innerHTML =
-      '<div style="color:#8792a8">لم تبدأ أي نقلة بعد</div>';
-
-    return;
-  }
-
-  history.forEach((m,i)=>{
-
-    if(i%2===0){
-
-      const row = document.createElement("div");
-
-      row.className="moveRow";
-
-      row.innerHTML =
-        "<span>"+(Math.floor(i/2)+1)+".</span>" +
-        "<span>"+squareName(m.fr,m.fc)+"-"+squareName(m.tr,m.tc)+"</span>" +
-        "<span></span>";
-
-      moves.appendChild(row);
-
-    }else{
-
-      const rows = moves.querySelectorAll(".moveRow");
-
-      rows[rows.length-1].children[2].textContent =
-        squareName(m.fr,m.fc)+"-"+squareName(m.tr,m.tc);
-    }
-  });
-}
-
-
-/* =========================================
-   قلب الرقعة
-========================================= */
 
 function flipBoard(){
 
   flipped = !flipped;
 
   renderBoard();
+
 }
 
 
-/* =========================================
-   الساعة
-========================================= */
+/* ===== الثيم ===== */
 
-function formatTime(seconds){
+function applyTheme(){
 
-  let m = Math.floor(seconds/60);
-  let s = seconds%60;
+  const board =
+    document.getElementById("board");
 
-  return m + ":" + String(s).padStart(2,"0");
+  board.classList.remove(
+    "classic",
+    "green",
+    "blue",
+    "wood",
+    "gray",
+    "purple"
+  );
+
+  board.classList.add(selectedTheme);
+
 }
 
-
-function startClock(){
-
-  clearInterval(timerInterval);
-
-  timerInterval = setInterval(()=>{
-
-    if(turn==="white"){
-
-      if(whiteSeconds>0)
-        whiteSeconds--;
-
-    }else{
-
-      if(blackSeconds>0)
-        blackSeconds--;
-    }
-
-    document.getElementById("whiteClock").textContent =
-      formatTime(whiteSeconds);
-
-    document.getElementById("blackClock").textContent =
-      formatTime(blackSeconds);
-
-  },1000);
-}
-
-
-/* =========================================
-   مباراة جديدة
-========================================= */
-
-function newGame(){
-
-  resetBoard();
-
-  renderBoard();
-
-  startClock();
-}
+showHome();
 
 </script>
 
 </body>
-        </html>
+      </html>
