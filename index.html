@@ -1,1045 +1,1181 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080c16">
-<title>Chessport</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/dist/chess.min.js"></script>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Arial,Tahoma,sans-serif;
-  background:#080c16;
-  color:white;
-  min-height:100vh;
-}
-
-button{
-  font-family:inherit;
-  cursor:pointer;
-}
-
-.hidden{
-  display:none!important;
-}
-
-.screen{
-  min-height:100vh;
-  padding:20px 12px 40px;
-}
-
-.header{
-  text-align:center;
-  padding:35px 10px 25px;
-}
-
-.logo{
-  font-size:50px;
-  font-weight:900;
-  letter-spacing:-2px;
-}
-
-.logo span{
-  color:#3b82f6;
-}
-
-.subtitle{
-  margin-top:10px;
-  color:#aeb8ca;
-  font-size:18px;
-}
-
-.card{
-  max-width:650px;
-  margin:18px auto;
-  background:#11182a;
-  border:1px solid #273550;
-  border-radius:25px;
-  padding:25px;
-  box-shadow:0 15px 40px rgba(0,0,0,.25);
-}
-
-.big-btn{
-  width:100%;
-  border:0;
-  border-radius:17px;
-  padding:18px;
-  margin:8px 0;
-  background:#2563eb;
-  color:white;
-  font-size:20px;
-  font-weight:bold;
-}
-
-.big-btn.secondary{
-  background:#1b263d;
-}
-
-.big-btn:hover{
-  filter:brightness(1.12);
-}
-
-.title{
-  text-align:center;
-  font-size:30px;
-  margin-bottom:25px;
-}
-
-.label{
-  display:block;
-  color:#aeb8ca;
-  margin:18px 0 10px;
-  font-size:17px;
-  font-weight:bold;
-}
-
-.options{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-}
-
-.option{
-  border:2px solid #293750;
-  background:#0d1423;
-  color:white;
-  padding:14px;
-  border-radius:14px;
-  font-size:16px;
-}
-
-.option.selected{
-  border-color:#3b82f6;
-  background:#172b51;
-}
-
-.themes{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
-
-.theme{
-  border:3px solid transparent;
-  border-radius:14px;
-  overflow:hidden;
-  background:#0b1120;
-  padding:5px;
-  color:white;
-}
-
-.theme.selected{
-  border-color:#3b82f6;
-}
-
-.theme-board{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  aspect-ratio:1;
-}
-
-.theme-board div{
-  min-height:20px;
-}
-
-.theme-name{
-  text-align:center;
-  padding:7px 2px;
-  font-size:13px;
-}
-
-.theme-classic .light,
-.classic .light{
-  background:#f0d9b5;
-}
-
-.theme-classic .dark,
-.classic .dark{
-  background:#b58863;
-}
-
-.theme-green .light,
-.green .light{
-  background:#eeeed2;
-}
-
-.theme-green .dark,
-.green .dark{
-  background:#769656;
-}
-
-.theme-blue .light,
-.blue .light{
-  background:#d9e8f5;
-}
-
-.theme-blue .dark,
-.blue .dark{
-  background:#4f81a8;
-}
-
-.theme-wood .light,
-.wood .light{
-  background:#e8cfa7;
-}
-
-.theme-wood .dark,
-.wood .dark{
-  background:#9a633d;
-}
-
-.theme-gray .light,
-.gray .light{
-  background:#dedede;
-}
-
-.theme-gray .dark,
-.gray .dark{
-  background:#777;
-}
-
-.theme-purple .light,
-.purple .light{
-  background:#eadcf2;
-}
-
-.theme-purple .dark,
-.purple .dark{
-  background:#80649a;
-}
-
-.game-wrap{
-  max-width:850px;
-  margin:auto;
-}
-
-.game-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-bottom:12px;
-}
-
-.player-box{
-  background:#11182a;
-  border:1px solid #273550;
-  border-radius:15px;
-  padding:10px 15px;
-  flex:1;
-  text-align:center;
-}
-
-.player-name{
-  font-weight:bold;
-  margin-bottom:5px;
-}
-
-.clock{
-  font-size:28px;
-  font-weight:900;
-  background:#070b14;
-  border-radius:10px;
-  padding:7px;
-}
-
-.clock.active{
-  outline:3px solid #2563eb;
-}
-
-.board-container{
-  width:min(94vw,700px);
-  margin:auto;
-  border:7px solid #0a0f1b;
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:0 20px 50px rgba(0,0,0,.35);
-}
-
-.board{
-  display:grid;
-  grid-template-columns:repeat(8,1fr);
-  aspect-ratio:1;
-}
-
-.square{
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  user-select:none;
-  touch-action:manipulation;
-  font-size:clamp(31px,9vw,67px);
-  line-height:1;
-}
-
-.square.light{
-  background:#f0d9b5;
-}
-
-.square.dark{
-  background:#b58863;
-}
-
-.square.selected{
-  box-shadow:inset 0 0 0 5px #22c55e;
-}
-
-.square.last{
-  box-shadow:inset 0 0 0 5px rgba(250,204,21,.65);
-}
-
-.square.legal::after{
-  content:"";
-  width:22%;
-  height:22%;
-  background:rgba(20,30,20,.35);
-  border-radius:50%;
-  position:absolute;
-}
-
-.square.capture::after{
-  content:"";
-  width:75%;
-  height:75%;
-  border:5px solid rgba(200,40,40,.55);
-  border-radius:50%;
-  position:absolute;
-}
-
-.piece{
-  position:relative;
-  z-index:2;
-  font-family:"Times New Roman",serif;
-}
-
-.white-piece{
-  color:#fff;
-  text-shadow:0 2px 2px #555;
-}
-
-.black-piece{
-  color:#171717;
-  text-shadow:0 1px 1px #aaa;
-}
-
-.game-info{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-  margin-top:18px;
-}
-
-.history{
-  background:#11182a;
-  border:1px solid #273550;
-  border-radius:18px;
-  padding:17px;
-  min-height:120px;
-}
-
-.history h3{
-  margin-bottom:12px;
-}
-
-.moves{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  color:#dce5f5;
-}
-
-.move{
-  background:#1a2539;
-  padding:6px 9px;
-  border-radius:8px;
-  font-size:14px;
-}
-
-.controls{
-  background:#11182a;
-  border:1px solid #273550;
-  border-radius:18px;
-  padding:17px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-}
-
-.control{
-  border:0;
-  background:#1b263d;
-  color:white;
-  padding:12px 8px;
-  border-radius:11px;
-  font-weight:bold;
-}
-
-.control.primary{
-  background:#2563eb;
-}
-
-.status{
-  text-align:center;
-  margin:15px 0;
-  font-size:19px;
-  font-weight:bold;
-  min-height:25px;
-}
-
-.back{
-  display:block;
-  width:100%;
-  max-width:650px;
-  margin:15px auto 0;
-  border:0;
-  background:#27344d;
-  color:white;
-  padding:14px;
-  border-radius:14px;
-  font-size:17px;
-}
-
-@media(max-width:600px){
-
-  .screen{
-    padding:12px 10px 30px;
-  }
-
-  .logo{
-    font-size:38px;
-  }
-
-  .subtitle{
-    font-size:16px;
-  }
-
-  .card{
-    padding:17px;
-  }
-
-  .themes{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .game-info{
-    grid-template-columns:1fr;
-  }
-
-  .game-top{
-    gap:6px;
-  }
-
-  .player-box{
-    padding:8px;
-  }
-
-  .clock{
-    font-size:22px;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <title>Chessport</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg: #070d18;
+      --panel: #0d1728;
+      --panel2: #111f34;
+      --border: rgba(255,255,255,.08);
+      --text: #f4f7fb;
+      --muted: #91a0b7;
+      --blue: #2f8cff;
+      --blue2: #1768d5;
+      --green: #20c77a;
+      --red: #ff4d5d;
+      --gold: #f5b942;
+      --light-square: #e7edf5;
+      --dark-square: #47749d;
+    }
+
+    body {
+      font-family: Arial, Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(47,140,255,.16), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(32,199,122,.08), transparent 25%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button {
+      font-family: inherit;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      height: 72px;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7,13,24,.8);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo {
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .logo span {
+      color: var(--blue);
+    }
+
+    .logo small {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 3px;
+      margin-top: -3px;
+      text-align: center;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: white;
+      font-size: 19px;
+    }
+
+    .icon-btn:active {
+      transform: scale(.95);
+    }
+
+    /* SCREENS */
+    .screen {
+      display: none;
+      padding: 28px 18px 45px;
+      animation: fade .2s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* HOME */
+    .hero {
+      text-align: center;
+      padding: 35px 10px 25px;
+    }
+
+    .hero-piece {
+      font-size: 70px;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 8px 25px rgba(47,140,255,.3));
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 10vw, 70px);
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .hero h1 span {
+      color: var(--blue);
+    }
+
+    .hero p {
+      color: var(--muted);
+      margin-top: 14px;
+      font-size: 15px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 13px;
+      max-width: 700px;
+      margin: 15px auto;
+    }
+
+    .main-card {
+      min-height: 125px;
+      background: linear-gradient(145deg, var(--panel2), var(--panel));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: right;
+      color: white;
+      transition: .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(47,140,255,.35);
+    }
+
+    .main-card.primary {
+      background: linear-gradient(145deg, #1768d5, #124c9b);
+    }
+
+    .main-card .emoji {
+      font-size: 30px;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .main-card h3 {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .main-card p {
+      color: #aebbd0;
+      font-size: 12px;
+    }
+
+    .primary p {
+      color: #d9eaff;
+    }
+
+    .section-title {
+      max-width: 700px;
+      margin: 35px auto 12px;
+      font-size: 18px;
+    }
+
+    .quick-grid {
+      max-width: 700px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .quick {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: white;
+      border-radius: 14px;
+      padding: 14px 8px;
+      font-size: 13px;
+    }
+
+    .quick span {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    /* TITLES */
+    .page-title {
+      max-width: 800px;
+      margin: 5px auto 25px;
+    }
+
+    .page-title h2 {
+      font-size: 30px;
+      margin-bottom: 6px;
+    }
+
+    .page-title p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* SETUP */
+    .setup-card {
+      max-width: 650px;
+      margin: auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
+    }
+
+    .setup-section {
+      margin-bottom: 24px;
+    }
+
+    .setup-section h3 {
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .option {
+      padding: 13px 8px;
+      border-radius: 12px;
+      color: #d8e1ee;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .option.selected {
+      border-color: var(--blue);
+      background: rgba(47,140,255,.16);
+      color: white;
+      box-shadow: 0 0 0 1px rgba(47,140,255,.2);
+    }
+
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      color: white;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    /* GAME */
+    .game-wrap {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .game-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .game-status {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .back-game {
+      color: white;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 13px;
+    }
+
+    .player-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 10px 13px;
+      margin-bottom: 9px;
+    }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      background: var(--panel2);
+      border-radius: 50%;
+    }
+
+    .player-name {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .clock {
+      font-family: monospace;
+      font-size: 22px;
+      font-weight: bold;
+      background: #050a12;
+      padding: 7px 12px;
+      border-radius: 9px;
+      min-width: 85px;
+      text-align: center;
+    }
+
+    .clock.active {
+      color: #fff;
+      box-shadow: 0 0 0 1px var(--blue);
+    }
+
+    .board-area {
+      display: flex;
+      justify-content: center;
+    }
+
+    #board {
+      width: min(92vw, 680px);
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      border-radius: 7px;
+      overflow: hidden;
+      box-shadow: 0 15px 50px rgba(0,0,0,.4);
+      user-select: none;
+    }
+
+    .square {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      aspect-ratio: 1;
+      cursor: pointer;
+    }
+
+    .light {
+      background: var(--light-square);
+    }
+
+    .dark {
+      background: var(--dark-square);
+    }
+
+    .square.selected {
+      box-shadow: inset 0 0 0 5px rgba(245,185,66,.85);
+    }
+
+    .square.last {
+      box-shadow: inset 0 0 0 999px rgba(245,185,66,.22);
+    }
+
+    .square.legal::after {
+      content: "";
+      width: 24%;
+      height: 24%;
+      border-radius: 50%;
+      background: rgba(0,0,0,.22);
+      position: absolute;
+    }
+
+    .piece {
+      font-size: clamp(32px, 9vw, 67px);
+      line-height: 1;
+      z-index: 2;
+      font-family: "Arial Unicode MS", "Segoe UI Symbol", sans-serif;
+    }
+
+    .piece.white-piece {
+      color: #fff;
+      text-shadow:
+        0 2px 2px #000,
+        0 0 2px #000;
+    }
+
+    .piece.black-piece {
+      color: #111;
+      text-shadow:
+        0 1px 1px rgba(255,255,255,.4);
+    }
+
+    .game-controls {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .control {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: white;
+      padding: 12px 7px;
+      border-radius: 11px;
+      font-size: 13px;
+    }
+
+    .moves-box {
+      margin-top: 13px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 14px;
+    }
+
+    .moves-box h3 {
+      font-size: 14px;
+      margin-bottom: 9px;
+    }
+
+    #moves {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    /* OTHER PAGES */
+    .empty-card {
+      max-width: 650px;
+      margin: 30px auto;
+      padding: 45px 20px;
+      text-align: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+    }
+
+    .empty-card .big {
+      font-size: 55px;
+      margin-bottom: 15px;
+    }
+
+    .empty-card h3 {
+      margin-bottom: 8px;
+    }
+
+    .empty-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      padding: 12px 22px;
+      background: var(--blue);
+      color: white;
+      border-radius: 11px;
+    }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #152238;
+      border: 1px solid rgba(255,255,255,.1);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 12px;
+      opacity: 0;
+      transition: .25s;
+      z-index: 100;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* MOBILE */
+    @media(max-width:600px) {
+      header {
+        height: 64px;
+        padding: 0 14px;
+      }
+
+      .logo {
+        font-size: 23px;
+      }
+
+      .screen {
+        padding: 18px 12px 35px;
+      }
+
+      .hero {
+        padding-top: 25px;
+      }
+
+      .hero-piece {
+        font-size: 55px;
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .main-card {
+        min-height: 115px;
+        padding: 16px;
+      }
+
+      .main-card .emoji {
+        font-size: 26px;
+        margin-bottom: 9px;
+      }
+
+      .main-card h3 {
+        font-size: 15px;
+      }
+
+      .main-card p {
+        font-size: 11px;
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .game-controls {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .piece {
+        font-size: clamp(29px, 12vw, 58px);
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- الرئيسية -->
-<section id="home" class="screen">
+<div class="app">
 
-  <div class="header">
+  <!-- HEADER -->
+  <header>
     <div class="logo">
-      Chess<span>port</span> ♟
+      Chess<span>port</span>
+      <small>CHESS PLATFORM</small>
     </div>
 
-    <div class="subtitle">
-      منصة شطرنج عربية — تعمل على الهاتف والكمبيوتر
+    <div class="header-actions">
+      <button class="icon-btn" onclick="showScreen('home')">⌂</button>
+      <button class="icon-btn" onclick="showToast('الإعدادات قادمة في النسخة القادمة ⚙️')">⚙</button>
     </div>
-  </div>
-
-  <div class="card">
-
-    <button class="big-btn" onclick="showSetup()">
-      ♟️ لعب مباراة جديدة
-    </button>
-
-    <button class="big-btn secondary"
-      onclick="alert('قسم البطولات سيتم تطويره قريبًا 🏆')">
-      🏆 البطولات
-    </button>
-
-    <button class="big-btn secondary"
-      onclick="alert('قسم تعلم الشطرنج سيتم تطويره قريبًا 📚')">
-      📚 تعلم الشطرنج
-    </button>
-
-  </div>
-
-</section>
+  </header>
 
 
-<!-- إعداد المباراة -->
-<section id="setup" class="screen hidden">
+  <!-- HOME -->
+  <section id="home" class="screen active">
 
-  <div class="card">
-
-    <h1 class="title">
-      ⚙️ إعداد المباراة
-    </h1>
-
-    <div class="label">
-      اختر لونك
+    <div class="hero">
+      <div class="hero-piece">♟</div>
+      <h1>Chess<span>port</span></h1>
+      <p>منصتك الجديدة لعالم الشطرنج ♟️</p>
     </div>
 
-    <div class="options">
+    <div class="main-grid">
 
-      <button id="whiteBtn"
-        class="option selected"
-        onclick="chooseColor('w')">
-        ⚪ الأبيض
+      <button class="main-card primary" onclick="showScreen('setup')">
+        <span class="emoji">♟️</span>
+        <h3>لعب مباراة</h3>
+        <p>ابدأ مباراة شطرنج جديدة</p>
       </button>
 
-      <button id="blackBtn"
-        class="option"
-        onclick="chooseColor('b')">
-        ⚫ الأسود
+      <button class="main-card" onclick="showScreen('online')">
+        <span class="emoji">🌐</span>
+        <h3>اللعب أونلاين</h3>
+        <p>العب مع لاعبين من أي مكان</p>
+      </button>
+
+      <button class="main-card" onclick="showScreen('tournaments')">
+        <span class="emoji">🏆</span>
+        <h3>البطولات</h3>
+        <p>البطولات والنتائج والترتيب</p>
+      </button>
+
+      <button class="main-card" onclick="showScreen('learn')">
+        <span class="emoji">📚</span>
+        <h3>تعلم الشطرنج</h3>
+        <p>دروس وتدريبات لتحسين مستواك</p>
       </button>
 
     </div>
 
+    <h3 class="section-title">الوصول السريع</h3>
 
-    <div class="label">
-      وقت المباراة
+    <div class="quick-grid">
+      <button class="quick" onclick="showToast('قسم المباريات قادم')">
+        <span>⚔️</span>
+        مبارياتي
+      </button>
+
+      <button class="quick" onclick="showToast('قسم التصنيف قادم')">
+        <span>📊</span>
+        التصنيف
+      </button>
+
+      <button class="quick" onclick="showToast('الملف الشخصي قادم')">
+        <span>👤</span>
+        حسابي
+      </button>
     </div>
 
-    <div class="options">
+  </section>
 
-      <button class="option selected timeOption"
-        onclick="chooseTime(10,this)">
-        10 دقائق
-      </button>
 
-      <button class="option timeOption"
-        onclick="chooseTime(5,this)">
-        5 دقائق
-      </button>
+  <!-- SETUP -->
+  <section id="setup" class="screen">
 
-      <button class="option timeOption"
-        onclick="chooseTime(3,this)">
-        3 دقائق
-      </button>
-
-      <button class="option timeOption"
-        onclick="chooseTime(15,this)">
-        15 دقيقة
-      </button>
-
+    <div class="page-title">
+      <h2>مباراة جديدة ♟️</h2>
+      <p>اختر إعدادات المباراة ثم ابدأ اللعب.</p>
     </div>
 
+    <div class="setup-card">
 
-    <div class="label">
-      🎨 اختر الرقعة
-    </div>
+      <div class="setup-section">
+        <h3>اختر لونك</h3>
 
-    <div class="themes">
+        <div class="options">
+          <button class="option selected" id="whiteOption" onclick="selectColor('white')">
+            ♔ الأبيض
+          </button>
 
-      <button class="theme selected"
-        onclick="chooseTheme('classic',this)">
+          <button class="option" id="blackOption" onclick="selectColor('black')">
+            ♚ الأسود
+          </button>
 
-        <div class="theme-board">
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-        </div>
-
-        <div class="theme-name">كلاسيك</div>
-
-      </button>
-
-
-      <button class="theme"
-        onclick="chooseTheme('green',this)">
-
-        <div class="theme-board">
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-        </div>
-
-        <div class="theme-name">أخضر</div>
-
-      </button>
-
-
-      <button class="theme"
-        onclick="chooseTheme('blue',this)">
-
-        <div class="theme-board">
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-        </div>
-
-        <div class="theme-name">أزرق</div>
-
-      </button>
-
-
-      <button class="theme"
-        onclick="chooseTheme('wood',this)">
-
-        <div class="theme-board">
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-        </div>
-
-        <div class="theme-name">خشبي</div>
-
-      </button>
-
-
-      <button class="theme"
-        onclick="chooseTheme('gray',this)">
-
-        <div class="theme-board">
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-        </div>
-
-        <div class="theme-name">رمادي</div>
-
-      </button>
-
-
-      <button class="theme"
-        onclick="chooseTheme('purple',this)">
-
-        <div class="theme-board">
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="light"></div><div class="dark"></div>
-          <div class="dark"></div><div class="light"></div>
-          <div class="dark"></div><div class="light"></div>
-        </div>
-
-        <div class="theme-name">بنفسجي</div>
-
-      </button>
-
-    </div>
-
-
-    <button class="big-btn" onclick="startGame()">
-      🚀 ابدأ المباراة
-    </button>
-
-    <button class="back" onclick="showHome()">
-      ← العودة للرئيسية
-    </button>
-
-  </div>
-
-</section>
-
-
-<!-- اللعبة -->
-<section id="game" class="screen hidden">
-
-  <div class="game-wrap">
-
-    <div class="game-top">
-
-      <div class="player-box">
-        <div class="player-name">
-          الأسود ⚫
-        </div>
-
-        <div id="blackClock" class="clock">
-          10:00
+          <button class="option" id="randomOption" onclick="selectColor('random')">
+            🎲 عشوائي
+          </button>
         </div>
       </div>
 
 
-      <div class="player-box">
-        <div class="player-name">
-          الأبيض ⚪
-        </div>
+      <div class="setup-section">
+        <h3>وقت المباراة</h3>
 
-        <div id="whiteClock" class="clock">
-          10:00
+        <div class="options">
+          <button class="option selected" onclick="selectTime(10,this)">10 دقيقة</button>
+          <button class="option" onclick="selectTime(5,this)">5 دقائق</button>
+          <button class="option" onclick="selectTime(3,this)">3 دقائق</button>
+          <button class="option" onclick="selectTime(1,this)">1 دقيقة</button>
         </div>
       </div>
 
-    </div>
 
+      <div class="setup-section">
+        <h3>شكل الرقعة</h3>
 
-    <div id="status" class="status">
-      دور الأبيض ⚪
-    </div>
-
-
-    <div id="boardContainer"
-      class="board-container">
-
-      <div id="board"
-        class="board">
-      </div>
-
-    </div>
-
-
-    <div class="game-info">
-
-      <div class="history">
-
-        <h3>
-          📜 النقلات
-        </h3>
-
-        <div id="moves"
-          class="moves">
+        <div class="options">
+          <button class="option selected" onclick="selectTheme('classic',this)">كلاسيك</button>
+          <button class="option" onclick="selectTheme('green',this)">أخضر</button>
+          <button class="option" onclick="selectTheme('blue',this)">أزرق</button>
+          <button class="option" onclick="selectTheme('wood',this)">خشبي</button>
         </div>
-
       </div>
 
 
-      <div class="controls">
+      <button class="start-btn" onclick="startGame()">
+        ابدأ المباراة ♟️
+      </button>
 
-        <button class="control"
-          onclick="undoMove()">
-          ↩️ تراجع
+    </div>
+
+  </section>
+
+
+  <!-- GAME -->
+  <section id="game" class="screen">
+
+    <div class="game-wrap">
+
+      <div class="game-top">
+        <div class="game-status" id="status">دور الأبيض</div>
+
+        <button class="back-game" onclick="confirmHome()">
+          ← خروج
         </button>
+      </div>
 
-        <button class="control"
-          onclick="resetGame()">
-          🔄 إعادة
-        </button>
 
-        <button class="control primary"
-          onclick="showHome()">
-          🏠 الرئيسية
-        </button>
+      <div class="player-bar">
+        <div class="player-info">
+          <div class="avatar">♚</div>
+          <div class="player-name">الأسود</div>
+        </div>
 
-        <button class="control"
-          onclick="flipBoard()">
-          🔃 قلب الرقعة
-        </button>
+        <div class="clock" id="blackClock">10:00</div>
+      </div>
 
+
+      <div class="board-area">
+        <div id="board"></div>
+      </div>
+
+
+      <div class="player-bar" style="margin-top:9px;margin-bottom:0">
+        <div class="player-info">
+          <div class="avatar">♔</div>
+          <div class="player-name">الأبيض</div>
+        </div>
+
+        <div class="clock active" id="whiteClock">10:00</div>
+      </div>
+
+
+      <div class="game-controls">
+        <button class="control" onclick="undoMove()">↩ تراجع</button>
+        <button class="control" onclick="resetGame()">🔄 إعادة</button>
+        <button class="control" onclick="flipBoard()">🔃 قلب الرقعة</button>
+        <button class="control" onclick="confirmHome()">🏠 الرئيسية</button>
+      </div>
+
+
+      <div class="moves-box">
+        <h3>سجل النقلات</h3>
+        <div id="moves">لم تبدأ أي نقلة بعد.</div>
       </div>
 
     </div>
 
-  </div>
+  </section>
 
-</section>
+
+  <!-- ONLINE -->
+  <section id="online" class="screen">
+
+    <div class="page-title">
+      <h2>اللعب أونلاين 🌐</h2>
+      <p>قسم اللعب عبر الإنترنت في Chessport.</p>
+    </div>
+
+    <div class="empty-card">
+      <div class="big">🌐</div>
+      <h3>اللعب أونلاين قريبًا</h3>
+      <p>
+        سيتم إضافة إنشاء المباريات، دعوة الأصدقاء،
+        غرف اللعب واللعب ضد لاعبين حقيقيين في المراحل القادمة.
+      </p>
+      <button class="back-btn" onclick="showScreen('home')">العودة للرئيسية</button>
+    </div>
+
+  </section>
+
+
+  <!-- TOURNAMENTS -->
+  <section id="tournaments" class="screen">
+
+    <div class="page-title">
+      <h2>البطولات 🏆</h2>
+      <p>مكان مخصص لبطولات Chessport ونتائجها.</p>
+    </div>
+
+    <div class="empty-card">
+      <div class="big">🏆</div>
+      <h3>قسم البطولات قادم</h3>
+      <p>
+        سيتم إضافة البطولات، التسجيل، الجولات،
+        النتائج والترتيب داخل Chessport.
+      </p>
+      <button class="back-btn" onclick="showScreen('home')">العودة للرئيسية</button>
+    </div>
+
+  </section>
+
+
+  <!-- LEARN -->
+  <section id="learn" class="screen">
+
+    <div class="page-title">
+      <h2>تعلم الشطرنج 📚</h2>
+      <p>تعلم الأساسيات وطوّر مستواك في الشطرنج.</p>
+    </div>
+
+    <div class="empty-card">
+      <div class="big">📚</div>
+      <h3>أكاديمية Chessport قريبًا</h3>
+      <p>
+        سيتم إضافة دروس، تكتيكات، ألغاز شطرنج
+        وتدريبات لمختلف المستويات.
+      </p>
+      <button class="back-btn" onclick="showScreen('home')">العودة للرئيسية</button>
+    </div>
+
+  </section>
+
+</div>
+
+
+<div id="toast"></div>
 
 
 <script>
 
-let game = new Chess();
+  /* =========================
+     GENERAL
+  ========================= */
 
-let selectedSquare = null;
+  function showScreen(id) {
 
-let playerColor = "w";
+    document.querySelectorAll(".screen").forEach(screen => {
+      screen.classList.remove("active");
+    });
 
-let selectedTime = 10;
+    const target = document.getElementById(id);
 
-let selectedTheme = "classic";
+    if (target) {
+      target.classList.add("active");
+    }
 
-let flipped = false;
-
-let clocks = {
-  w: 600,
-  b: 600
-};
-
-let timer = null;
-
-
-/* ===== التنقل ===== */
-
-function showHome(){
-
-  stopClock();
-
-  document.getElementById("home")
-    .classList.remove("hidden");
-
-  document.getElementById("setup")
-    .classList.add("hidden");
-
-  document.getElementById("game")
-    .classList.add("hidden");
-}
-
-
-function showSetup(){
-
-  document.getElementById("home")
-    .classList.add("hidden");
-
-  document.getElementById("setup")
-    .classList.remove("hidden");
-
-  document.getElementById("game")
-    .classList.add("hidden");
-}
-
-
-/* ===== الإعدادات ===== */
-
-function chooseColor(color){
-
-  playerColor = color;
-
-  document.getElementById("whiteBtn")
-    .classList.toggle("selected",color==="w");
-
-  document.getElementById("blackBtn")
-    .classList.toggle("selected",color==="b");
-}
-
-
-function chooseTime(minutes,button){
-
-  selectedTime = minutes;
-
-  document.querySelectorAll(".timeOption")
-    .forEach(b=>b.classList.remove("selected"));
-
-  button.classList.add("selected");
-}
-
-
-function chooseTheme(theme,button){
-
-  selectedTheme = theme;
-
-  document.querySelectorAll(".theme")
-    .forEach(b=>b.classList.remove("selected"));
-
-  button.classList.add("selected");
-}
-
-
-/* ===== بدء المباراة ===== */
-
-function startGame(){
-
-  game = new Chess();
-
-  selectedSquare = null;
-
-  clocks.w = selectedTime * 60;
-  clocks.b = selectedTime * 60;
-
-  flipped = playerColor === "b";
-
-  document.getElementById("setup")
-    .classList.add("hidden");
-
-  document.getElementById("game")
-    .classList.remove("hidden");
-
-  updateClockDisplay();
-
-  renderBoard();
-
-  updateStatus();
-
-  startClock();
-}
-
-
-/* ===== الرقعة ===== */
-
-const pieces = {
-
-  p:"♟",
-  r:"♜",
-  n:"♞",
-  b:"♝",
-  q:"♛",
-  k:"♚",
-
-  P:"♙",
-  R:"♖",
-  N:"♘",
-  B:"♗",
-  Q:"♕",
-  K:"♔"
-
-};
-
-
-function renderBoard(){
-
-  const board = document.getElementById("board");
-
-  board.innerHTML = "";
-
-  let position = game.board();
-
-  if(flipped){
-
-    position = position
-      .slice()
-      .reverse()
-      .map(row=>row.slice().reverse());
-
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
 
-  position.forEach((row,rowIndex)=>{
 
-    row.forEach((piece,colIndex)=>{
+  function showToast(message) {
 
-      const square = document.createElement("div");
+    const toast = document.getElementById("toast");
 
-      let actualRow = flipped
-        ? 7-rowIndex
-        : rowIndex;
+    toast.textContent = message;
+    toast.classList.add("show");
 
-      let actualCol = flipped
-        ? 7-colIndex
-        : colIndex;
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2300);
+  }
 
-      const squareName =
-        String.fromCharCode(97+actualCol)
-        +(8-actualRow);
 
-      square.className =
-        "square "
-        + ((actualRow+actualCol)%2===0
-        ? "light"
-        : "dark");
+  /* =========================
+     GAME SETTINGS
+  ========================= */
 
-      if(selectedSquare === squareName){
+  let selectedColor = "white";
+  let selectedTime = 10;
+  let selectedTheme = "classic";
 
-        square.classList.add("selected");
+  let game = new Chess();
 
+  let selectedSquare = null;
+  let flipped = false;
+
+  let clocks = {
+    white: 600,
+    black: 600
+  };
+
+  let timer = null;
+
+
+  function selectColor(color) {
+
+    selectedColor = color;
+
+    document
+      .querySelectorAll("#whiteOption,#blackOption,#randomOption")
+      .forEach(btn => btn.classList.remove("selected"));
+
+    if (color === "white") {
+      document.getElementById("whiteOption").classList.add("selected");
+    }
+
+    if (color === "black") {
+      document.getElementById("blackOption").classList.add("selected");
+    }
+
+    if (color === "random") {
+      document.getElementById("randomOption").classList.add("selected");
+    }
+  }
+
+
+  function selectTime(time, button) {
+
+    selectedTime = time;
+
+    button
+      .parentElement
+      .querySelectorAll(".option")
+      .forEach(btn => btn.classList.remove("selected"));
+
+    button.classList.add("selected");
+  }
+
+
+  function selectTheme(theme, button) {
+
+    selectedTheme = theme;
+
+    button
+      .parentElement
+      .querySelectorAll(".option")
+      .forEach(btn => btn.classList.remove("selected"));
+
+    button.classList.add("selected");
+  }
+
+
+  /* =========================
+     START GAME
+  ========================= */
+
+  function startGame() {
+
+    game.reset();
+
+    selectedSquare = null;
+    flipped = false;
+
+    if (selectedColor === "random") {
+      selectedColor = Math.random() > 0.5 ? "white" : "black";
+    }
+
+    clocks.white = selectedTime * 60;
+    clocks.black = selectedTime * 60;
+
+    stopClock();
+
+    applyTheme();
+
+    showScreen("game");
+
+    renderBoard();
+
+    updateMoves();
+
+    updateStatus();
+
+    updateClockDisplay();
+
+    startClock();
+  }
+
+
+  /* =========================
+     BOARD
+  ========================= */
+
+  const pieces = {
+    w: {
+      p: "♙",
+      r: "♖",
+      n: "♘",
+      b: "♗",
+      q: "♕",
+      k: "♔"
+    },
+
+    b: {
+      p: "♟",
+      r: "♜",
+      n: "♞",
+      b: "♝",
+      q: "♛",
+      k: "♚"
+    }
+  };
+
+
+  function renderBoard() {
+
+    const board = document.getElementById("board");
+
+    board.innerHTML = "";
+
+    let position = game.board();
+
+    let rows = [...Array(8).keys()];
+
+    if (flipped) {
+      rows.reverse();
+    }
+
+    rows.forEach(row => {
+
+      let cols = [...Array(8).keys()];
+
+      if (flipped) {
+        cols.reverse();
       }
 
-      if(piece){
+      cols.forEach(col => {
 
-        const span =
-          document.createElement("span");
+        const square = document.createElement("div");
 
-        span.className =
-          "piece "
-          +(piece.color==="w"
-          ? "white-piece"
-          : "black-piece");
+        const isLight = (row + col) % 2 === 0;
 
-        span.textContent =
-          pieces[
-            piece.color==="w"
-            ? piece.type.toUpperCase()
-            : piece.type
-          ];
+        square.className =
+          "square " + (isLight ? "light" : "dark");
 
-        square.appendChild(span);
+        const squareName =
+          String.fromCharCode(97 + col) + (8 - row);
 
-      }
+        square.dataset.square = squareName;
 
-      square.onclick =
-        ()=>handleSquareClick(squareName);
 
-      board.appendChild(square);
+        if (selectedSquare === squareName) {
+          square.classList.add("selected");
+        }
+
+
+        const piece = position[row][col];
+
+        if (piece) {
+
+          const pieceElement = document.createElement("span");
+
+          pieceElement.className =
+            "piece " +
+            (piece.color === "w"
+              ? "white-piece"
+              : "black-piece");
+
+          pieceElement.textContent =
+            pieces[piece.color][piece.type];
+
+          square.appendChild(pieceElement);
+        }
+
+
+        if (selectedSquare) {
+
+          const moves = game.moves({
+            square: selectedSquare,
+            verbose: true
+          });
+
+          if (
+            moves.some(move => move.to === squareName)
+          ) {
+            square.classList.add("legal");
+          }
+        }
+
+
+        square.addEventListener("click", () => {
+          handleSquareClick(squareName);
+        });
+
+
+        board.appendChild(square);
+
+      });
 
     });
 
   }
 
-  applyTheme();
 
-}
+  /* =========================
+     MOVE HANDLING
+  ========================= */
+
+  function handleSquareClick(square) {
+
+    if (game.game_over()) {
+      return;
+    }
 
 
-/* ===== اللعب ===== */
+    const piece = game.get(square);
 
-function handleSquareClick(square){
 
-  if(game.isGameOver()) return;
+    if (!selectedSquare) {
 
-  const piece =
-    game.get(square);
+      if (!piece) {
+        return;
+      }
 
-  if(!selectedSquare){
-
-    if(piece && piece.color === game.turn()){
+      if (
+        (game.turn() === "w" && piece.color !== "w") ||
+        (game.turn() === "b" && piece.color !== "b")
+      ) {
+        showToast("هذا ليس دورك الآن");
+        return;
+      }
 
       selectedSquare = square;
 
       renderBoard();
 
+      return;
     }
 
-    return;
 
-  }
+    if (selectedSquare === square) {
 
+      selectedSquare = null;
 
-  if(selectedSquare === square){
+      renderBoard();
 
-    selectedSquare = null;
+      return;
+    }
 
-    renderBoard();
-
-    return;
-
-  }
-
-
-  try{
 
     const move = game.move({
-
-      from:selectedSquare,
-
-      to:square,
-
-      promotion:"q"
-
+      from: selectedSquare,
+      to: square,
+      promotion: "q"
     });
 
-    if(move){
+
+    if (move) {
 
       selectedSquare = null;
 
@@ -1049,250 +1185,374 @@ function handleSquareClick(square){
 
       updateStatus();
 
-      if(game.isGameOver()){
+      if (!game.game_over()) {
+        switchClock();
+      }
+
+    } else {
+
+      if (
+        piece &&
+        piece.color === (game.turn() === "w" ? "w" : "b")
+      ) {
+
+        selectedSquare = square;
+
+        renderBoard();
+
+      } else {
+
+        showToast("نقلة غير قانونية");
+      }
+
+    }
+
+  }
+
+
+  /* =========================
+     MOVES
+  ========================= */
+
+  function updateMoves() {
+
+    const movesElement = document.getElementById("moves");
+
+    const history = game.history();
+
+    if (!history.length) {
+      movesElement.textContent = "لم تبدأ أي نقلة بعد.";
+      return;
+    }
+
+    let html = "";
+
+    for (let i = 0; i < history.length; i += 2) {
+
+      const number = Math.floor(i / 2) + 1;
+
+      html +=
+        `<b>${number}.</b> ${history[i] || ""} ${history[i + 1] || ""}<br>`;
+    }
+
+    movesElement.innerHTML = html;
+
+    movesElement.scrollTop = movesElement.scrollHeight;
+  }
+
+
+  /* =========================
+     STATUS
+  ========================= */
+
+  function updateStatus() {
+
+    const status = document.getElementById("status");
+
+    if (game.in_checkmate()) {
+
+      const winner =
+        game.turn() === "w"
+          ? "الأسود"
+          : "الأبيض";
+
+      status.textContent =
+        "كش مات — " + winner + " يفوز 🏆";
+
+      stopClock();
+
+      showToast("انتهت المباراة 🏆");
+
+      return;
+    }
+
+
+    if (game.in_draw()) {
+
+      status.textContent = "تعادل 🤝";
+
+      stopClock();
+
+      return;
+    }
+
+
+    if (game.in_check()) {
+
+      status.textContent =
+        game.turn() === "w"
+          ? "الأبيض في كش ⚠️"
+          : "الأسود في كش ⚠️";
+
+      return;
+    }
+
+
+    status.textContent =
+      game.turn() === "w"
+        ? "دور الأبيض"
+        : "دور الأسود";
+  }
+
+
+  /* =========================
+     CLOCK
+  ========================= */
+
+  function startClock() {
+
+    stopClock();
+
+    timer = setInterval(() => {
+
+      if (game.game_over()) {
+        stopClock();
+        return;
+      }
+
+
+      const color =
+        game.turn() === "w"
+          ? "white"
+          : "black";
+
+
+      clocks[color]--;
+
+      updateClockDisplay();
+
+
+      if (clocks[color] <= 0) {
+
+        clocks[color] = 0;
+
+        updateClockDisplay();
 
         stopClock();
 
+        const winner =
+          color === "white"
+            ? "الأسود"
+            : "الأبيض";
+
+        document.getElementById("status").textContent =
+          "انتهى الوقت — " + winner + " يفوز 🏆";
+
+        showToast("انتهى الوقت ⏱️");
       }
 
-      return;
+    }, 1000);
+  }
 
+
+  function stopClock() {
+
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+
+  function switchClock() {
+
+    updateClockDisplay();
+  }
+
+
+  function updateClockDisplay() {
+
+    document.getElementById("whiteClock").textContent =
+      formatTime(clocks.white);
+
+    document.getElementById("blackClock").textContent =
+      formatTime(clocks.black);
+
+
+    document
+      .getElementById("whiteClock")
+      .classList.toggle(
+        "active",
+        game.turn() === "w" && !game.game_over()
+      );
+
+
+    document
+      .getElementById("blackClock")
+      .classList.toggle(
+        "active",
+        game.turn() === "b" && !game.game_over()
+      );
+  }
+
+
+  function formatTime(seconds) {
+
+    seconds = Math.max(0, seconds);
+
+    const minutes =
+      Math.floor(seconds / 60);
+
+    const secs =
+      seconds % 60;
+
+    return (
+      String(minutes).padStart(2, "0") +
+      ":" +
+      String(secs).padStart(2, "0")
+    );
+  }
+
+
+  /* =========================
+     CONTROLS
+  ========================= */
+
+  function resetGame() {
+
+    if (!confirm("هل تريد إعادة المباراة؟")) {
+      return;
     }
 
-  }catch(error){}
-
-
-  if(piece && piece.color === game.turn()){
-
-    selectedSquare = square;
-
-  }else{
+    game.reset();
 
     selectedSquare = null;
 
-  }
+    clocks.white = selectedTime * 60;
+    clocks.black = selectedTime * 60;
 
-  renderBoard();
+    stopClock();
 
-}
+    renderBoard();
 
+    updateMoves();
 
-/* ===== النقلات ===== */
-
-function updateMoves(){
-
-  const container =
-    document.getElementById("moves");
-
-  container.innerHTML = "";
-
-  game.history().forEach((move,index)=>{
-
-    const span =
-      document.createElement("span");
-
-    span.className = "move";
-
-    span.textContent =
-      (index+1)+". "+move;
-
-    container.appendChild(span);
-
-  });
-
-}
-
-
-/* ===== الحالة ===== */
-
-function updateStatus(){
-
-  const status =
-    document.getElementById("status");
-
-  if(game.isCheckmate()){
-
-    status.textContent =
-      "♔ كش مات — انتهت المباراة";
-
-    return;
-
-  }
-
-  if(game.isDraw()){
-
-    status.textContent =
-      "🤝 تعادل";
-
-    return;
-
-  }
-
-  if(game.inCheck()){
-
-    status.textContent =
-      "⚠️ كش! دور "
-      +(game.turn()==="w"
-      ? "الأبيض ⚪"
-      : "الأسود ⚫");
-
-    return;
-
-  }
-
-  status.textContent =
-    "دور "
-    +(game.turn()==="w"
-    ? "الأبيض ⚪"
-    : "الأسود ⚫");
-}
-
-
-/* ===== الساعة ===== */
-
-function startClock(){
-
-  stopClock();
-
-  timer = setInterval(()=>{
-
-    if(game.isGameOver()){
-
-      stopClock();
-
-      return;
-
-    }
-
-    const turn = game.turn();
-
-    clocks[turn]--;
-
-    if(clocks[turn] <= 0){
-
-      clocks[turn] = 0;
-
-      stopClock();
-
-      document.getElementById("status")
-        .textContent =
-        "⏱️ انتهى الوقت — "
-        +(turn==="w"
-        ? "الأسود"
-        : "الأبيض")
-        +" يفوز بالوقت";
-
-    }
+    updateStatus();
 
     updateClockDisplay();
 
-  },1000);
-
-}
-
-
-function stopClock(){
-
-  if(timer){
-
-    clearInterval(timer);
-
-    timer = null;
-
+    startClock();
   }
 
-}
+
+  function undoMove() {
+
+    if (!game.history().length) {
+      showToast("لا توجد نقلة للتراجع");
+      return;
+    }
+
+    game.undo();
+
+    selectedSquare = null;
+
+    renderBoard();
+
+    updateMoves();
+
+    updateStatus();
+
+    updateClockDisplay();
+  }
 
 
-function updateClockDisplay(){
+  function flipBoard() {
 
-  document.getElementById("whiteClock")
-    .textContent =
-    formatTime(clocks.w);
+    flipped = !flipped;
 
-  document.getElementById("blackClock")
-    .textContent =
-    formatTime(clocks.b);
-
-}
+    renderBoard();
+  }
 
 
-function formatTime(seconds){
+  function confirmHome() {
 
-  const minutes =
-    Math.floor(seconds/60);
+    if (
+      game.history().length &&
+      !game.game_over()
+    ) {
 
-  const secs =
-    seconds%60;
+      if (!confirm("هل تريد الخروج من المباراة؟")) {
+        return;
+      }
+    }
 
-  return String(minutes)
-    .padStart(2,"0")
-    +":"
-    +String(secs)
-    .padStart(2,"0");
+    stopClock();
 
-}
-
-
-/* ===== أدوات ===== */
-
-function resetGame(){
-
-  startGame();
-
-}
+    showScreen("home");
+  }
 
 
-function undoMove(){
+  /* =========================
+     THEMES
+  ========================= */
 
-  if(game.history().length===0)
-    return;
+  function applyTheme() {
 
-  game.undo();
+    const root =
+      document.documentElement;
 
-  selectedSquare = null;
+    if (selectedTheme === "classic") {
 
-  renderBoard();
+      root.style.setProperty(
+        "--light-square",
+        "#e7edf5"
+      );
 
-  updateMoves();
+      root.style.setProperty(
+        "--dark-square",
+        "#47749d"
+      );
 
-  updateStatus();
-
-}
-
-
-function flipBoard(){
-
-  flipped = !flipped;
-
-  renderBoard();
-
-}
+    }
 
 
-/* ===== الثيم ===== */
+    if (selectedTheme === "green") {
 
-function applyTheme(){
+      root.style.setProperty(
+        "--light-square",
+        "#eeeed2"
+      );
 
-  const board =
-    document.getElementById("board");
+      root.style.setProperty(
+        "--dark-square",
+        "#769656"
+      );
 
-  board.classList.remove(
-    "classic",
-    "green",
-    "blue",
-    "wood",
-    "gray",
-    "purple"
-  );
+    }
 
-  board.classList.add(selectedTheme);
 
-}
+    if (selectedTheme === "blue") {
 
-showHome();
+      root.style.setProperty(
+        "--light-square",
+        "#dcecff"
+      );
+
+      root.style.setProperty(
+        "--dark-square",
+        "#4b78a8"
+      );
+
+    }
+
+
+    if (selectedTheme === "wood") {
+
+      root.style.setProperty(
+        "--light-square",
+        "#f0d9b5"
+      );
+
+      root.style.setProperty(
+        "--dark-square",
+        "#b58863"
+      );
+
+    }
+
+  }
 
 </script>
 
 </body>
-      </html>
+</html>
